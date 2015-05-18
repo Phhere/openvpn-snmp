@@ -1,0 +1,165 @@
+
+-- Open Source MIB for OpenVPN-Servers
+
+OPENVPN-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+	OBJECT-TYPE, MODULE-IDENTITY, experimental, 
+	Unsigned32, Integer32
+		FROM SNMPv2-SMI
+	DisplayString
+		FROM SNMPv2-TC;
+
+openvpnMib MODULE-IDENTITY
+	LAST-UPDATED "201505182006Z"
+	ORGANIZATION 
+		"Open Source Project"
+	CONTACT-INFO 
+		"Philipp Helo Rehs
+		http://github.com/Phhere/openvpn-snmp"
+	DESCRIPTION 
+		"A simple mib for openvpn servers"
+::= { experimental 1991 }
+
+openvpn              OBJECT IDENTIFIER ::= { openvpnMib 1 }
+
+openvpnServerTableLength  OBJECT-TYPE
+	SYNTAX     Unsigned32
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpn 1 }
+
+openvpnServerTable  OBJECT-TYPE
+	SYNTAX SEQUENCE OF OpenvpnServerEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpn 2 }
+
+openvpnServerEntry  OBJECT-TYPE
+	SYNTAX 	OpenvpnServerEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	INDEX { openvpnServerName }
+	::= { openvpnServerTable 1 }
+
+OpenvpnServerEntry ::= SEQUENCE {
+	openvpnServerName
+		DisplayString,
+	openvpnServerUsers
+		Integer32,
+	openvpnServerTrafficSend
+		Unsigned32,
+	openvpnServerTrafficReceived
+		Unsigned32
+}
+
+openvpnServerName  OBJECT-TYPE
+	SYNTAX     DisplayString
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpnServerEntry 1 }
+
+openvpnServerUsers  OBJECT-TYPE
+	SYNTAX     Integer32
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpnServerEntry 2 }
+
+openvpnServerTrafficSend  OBJECT-TYPE
+	SYNTAX     Unsigned32
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpnServerEntry 3 }
+
+openvpnServerTrafficReceived  OBJECT-TYPE
+	SYNTAX     Unsigned32
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpnServerEntry 4 }
+
+openvpnUserTableLength  OBJECT-TYPE
+	SYNTAX     Unsigned32
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpn 3 }
+
+openvpnUserTable  OBJECT-TYPE
+	SYNTAX SEQUENCE OF OpenvpnUserEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpn 4 }
+
+openvpnUserEntry  OBJECT-TYPE
+	SYNTAX 	OpenvpnUserEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	INDEX { openvpnUserName }
+	::= { openvpnUserTable 1 }
+
+OpenvpnUserEntry ::= SEQUENCE {
+	openvpnUserName
+		DisplayString,
+	openvpnUserServer
+		DisplayString,
+	openvpnUserTrafficSend
+		Unsigned32,
+	openvpnUserTrafficReceived
+		Unsigned32
+}
+
+openvpnUserName  OBJECT-TYPE
+	SYNTAX     DisplayString
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpnUserEntry 1 }
+
+openvpnUserServer  OBJECT-TYPE
+	SYNTAX     DisplayString
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpnUserEntry 2 }
+
+openvpnUserTrafficSend  OBJECT-TYPE
+	SYNTAX     Unsigned32
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpnUserEntry 3 }
+
+openvpnUserTrafficReceived  OBJECT-TYPE
+	SYNTAX     Unsigned32
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpnUserEntry 4 }
+END
+
+
+-- This MIB was created using NuDesign Technologies' Visual MIBuilder (Ver 5.2).
+
