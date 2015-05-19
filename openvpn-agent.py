@@ -1,41 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
-# python-netsnmpagent simple example agent
-#
+# openvpn-snmp agentx
+# Copyright (c) 2015 Philipp Helo Rehs
+# Based on python-netsnmpagent simple example agent
+# https://github.com/pief/python-netsnmpagent
 # Copyright (c) 2013 Pieter Hollants <pieter@hollants.com>
 # Licensed under the GNU Public License (GPL) version 3
-#
-
-#
-# This is an example of a simple SNMP sub-agent using the AgentX protocol
-# to connect to a master agent (snmpd), extending its MIB with the
-# information from the included SIMPLE-MIB.txt.
-#
-# Use the included script run_simple_agent.sh to test this example.
-#
-# Alternatively, if you want to test with your system-wide snmpd instance,
-# it must have as minimal configuration:
-#
-#   rocommunity <rosecret> 127.0.0.1
-#   master agentx
-#
-# snmpd must be started first, then this agent must be started as root
-# (because of the AgentX socket under /var/run/agentx/master), eg. via "sudo".
-#
-# Then, from a separate console and from inside the python-netsnmpagent
-# directory, you can run eg.:
-#
-#  snmpwalk -v 2c -c <rosecret> -M+. localhost SIMPLE-MIB::simpleMIB
-#
-# If you wish to test setting values as well, your snmpd.conf needs a
-# line like this:
-#
-#   rwcommunity <rwsecret> 127.0.0.1
-#
-# Then you can try something like:
-#
-#   snmpset -v 2c -c <rwsecret> -M+. localhost \
-#     SIMPLE-MIB::simpleInteger i 0
 #
 
 import sys, os, signal
@@ -92,65 +62,6 @@ try:
 except netsnmpagent.netsnmpAgentException as e:
 	print "{0}: {1}".format(prgname, e)
 	sys.exit(1)
-'''
-# Then we create all SNMP scalar variables we're willing to serve.
-simpleInteger = agent.Integer32(
-	oidstr = "SIMPLE-MIB::simpleInteger"
-)
-simpleIntegerContext1 = agent.Integer32(
-	oidstr = "SIMPLE-MIB::simpleInteger",
-	context = "context1",
-	initval = 200,
-)
-simpleIntegerRO = agent.Integer32(
-	oidstr   = "SIMPLE-MIB::simpleIntegerRO",
-	writable = False
-)
-simpleUnsigned = agent.Unsigned32(
-	oidstr = "SIMPLE-MIB::simpleUnsigned"
-)
-simpleUnsignedRO = agent.Unsigned32(
-	oidstr   = "SIMPLE-MIB::simpleUnsignedRO",
-	writable = False
-)
-simpleCounter32 = agent.Counter32(
-	oidstr = "SIMPLE-MIB::simpleCounter32"
-)
-simpleCounter32Context2 = agent.Counter32(
-	oidstr = "SIMPLE-MIB::simpleCounter32",
-	context = "context2",
-	initval = pow(2,32) - 10, # To rule out endianness bugs
-)
-simpleCounter64 = agent.Counter64(
-	oidstr = "SIMPLE-MIB::simpleCounter64"
-)
-simpleCounter64Context2 = agent.Counter64(
-	oidstr = "SIMPLE-MIB::simpleCounter64",
-	context = "context2",
-	initval = pow(2,64) - 10, # To rule out endianness bugs
-)
-simpleTimeTicks = agent.TimeTicks(
-	oidstr = "SIMPLE-MIB::simpleTimeTicks"
-)
-simpleIpAddress = agent.IpAddress(
-	oidstr = "SIMPLE-MIB::simpleIpAddress",
-	initval="127.0.0.1"
-)
-simpleOctetString = agent.OctetString(
-	oidstr  = "SIMPLE-MIB::simpleOctetString",
-	initval = "Hello World"
-)
-simpleDisplayString = agent.DisplayString(
-	oidstr  = "SIMPLE-MIB::simpleDisplayString",
-	initval = "Nice to meet you"
-)'''
-
-'''
-serverTableLength = agent.Unsigned32(
-	oidstr   = "OPENVPN-MIB::openvpnServerTableLength",
-	writable = False
-)
-'''
 
 serverTable = agent.Table(
 	oidstr = "OPENVPN-MIB::openvpnServerTable",
@@ -168,13 +79,6 @@ serverTable = agent.Table(
 	)
 )
 
-'''
-userTableLength = agent.Unsigned32(
-	oidstr   = "OPENVPN-MIB::openvpnUserTableLength",
-	writable = False
-)
-'''
-
 userTable = agent.Table(
 	oidstr = "OPENVPN-MIB::openvpnUserTable",
 	indexes = [
@@ -190,46 +94,7 @@ userTable = agent.Table(
 		oidstr = "OPENVPN-MIB::openvpnUserTableLength"
 	)
 )
-'''
-# Add the first table row
-firstTableRow1 = firstTable.addRow([agent.DisplayString("aa")])
-firstTableRow1.setRowCell(2, agent.DisplayString("Prague"))
-firstTableRow1.setRowCell(3, agent.Integer32(20))
 
-# Add the second table row
-firstTableRow2 = firstTable.addRow([agent.DisplayString("ab")])
-firstTableRow2.setRowCell(2, agent.DisplayString("Barcelona"))
-firstTableRow2.setRowCell(3, agent.Integer32(28))
-
-# Add the third table row
-firstTableRow3 = firstTable.addRow([agent.DisplayString("bb")])
-firstTableRow3.setRowCell(3, agent.Integer32(18))
-
-# Create the second table
-secondTable = agent.Table(
-	oidstr = "SIMPLE-MIB::secondTable",
-	indexes = [
-		agent.Integer32()
-	],
-	columns = [
-		(2, agent.DisplayString("Unknown interface")),
-		(3, agent.Unsigned32())
-	],
-	counterobj = agent.Unsigned32(
-		oidstr = "SIMPLE-MIB::secondTableNumber"
-	)
-)
-
-# Add the first table row
-secondTableRow1 = secondTable.addRow([agent.Integer32(1)])
-secondTableRow1.setRowCell(2, agent.DisplayString("foo0"))
-secondTableRow1.setRowCell(3, agent.Unsigned32(5030))
-
-# Add the second table row
-secondTableRow2 = secondTable.addRow([agent.Integer32(2)])
-secondTableRow2.setRowCell(2, agent.DisplayString("foo1"))
-secondTableRow2.setRowCell(3, agent.Unsigned32(12842))
-'''
 # Finally, we tell the agent to "start". This actually connects the
 # agent to the master agent.
 try:
@@ -318,16 +183,6 @@ while (loop):
 		else:
 			print "{0} is not readable".format(s['logFile'])
 
-	# Since we didn't give simpleCounter, simpleCounter64 and simpleTimeTicks
-	# a real meaning in the SIMPLE-MIB, we can basically do with them whatever
-	# we want. Here, we just increase them, although in different manners.
-	#simpleCounter32.update(simpleCounter32.value() + 2)
-	#simpleCounter64.update(simpleCounter64.value() + 4294967294)
-	#simpleTimeTicks.update(simpleTimeTicks.value() + 1)
-
-	# With counters, you can also call increment() on them
-	#simpleCounter32Context2.increment() # By 1
-	#simpleCounter64Context2.increment(5) # By 5
 
 print "{0}: Terminating.".format(prgname)
 agent.shutdown()

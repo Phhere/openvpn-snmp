@@ -2,8 +2,12 @@
 	"servers": 
 	[
 		{
-			"name": "Server UDP",
-			"logFile": "openvpn-status.log"
+			"name": "Server 1",
+			"logFile": "/path/to/openvpn-status.log"
+		},
+		{
+			"name": "Server 2",
+			"logFile": "/path/to/openvpn-status-2.log"
 		}
 	]
 }
