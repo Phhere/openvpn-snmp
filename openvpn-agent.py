@@ -155,12 +155,13 @@ serverTableLength = agent.Unsigned32(
 serverTable = agent.Table(
 	oidstr = "OPENVPN-MIB::openvpnServerTable",
 	indexes = [
-		agent.DisplayString()
+		agent.Unsigned32()
 	],
 	columns = [
-		(2, agent.Integer32(0)),
-		(3, agent.Unsigned32(0)),
-		(4, agent.Unsigned32(0))
+		(2, agent.DisplayString()),
+		(3, agent.Integer32(0)),
+		(4, agent.Unsigned32(0)),
+		(5, agent.Unsigned32(0))
 	],
 	counterobj = agent.Unsigned32(
 		oidstr = "OPENVPN-MIB::openvpnServerTableLength"
@@ -177,12 +178,13 @@ userTableLength = agent.Unsigned32(
 userTable = agent.Table(
 	oidstr = "OPENVPN-MIB::openvpnUserTable",
 	indexes = [
-		agent.DisplayString()
+		agent.Unsigned32()
 	],
 	columns = [
 		(2, agent.DisplayString()),
-		(3, agent.Unsigned32(0)),
-		(4, agent.Unsigned32(0))
+		(3, agent.DisplayString()),
+		(4, agent.Unsigned32(0)),
+		(5, agent.Unsigned32(0))
 	],
 	counterobj = agent.Unsigned32(
 		oidstr = "OPENVPN-MIB::openvpnUserTableLength"
@@ -294,21 +296,25 @@ while (loop):
 	
 	serverTable.clear();
 	userTable.clear();
+	user_index = 1;
 	for i in range(0, len(serverList['servers'])):
 		s = serverList['servers'][i]
 		if os.access(s['logFile'],os.R_OK):
 			fh = open(s['logFile'],"r")
 			fileContent = fh.readlines();
 			serverData = logFileParser(fileContent);
-			tmpRow = serverTable.addRow([agent.DisplayString(s['name'])])
-			tmpRow.setRowCell(2, agent.Integer32(len(serverData['users'])))
-			tmpRow.setRowCell(3, agent.Unsigned32(serverData['send']))
-			tmpRow.setRowCell(4, agent.Unsigned32(serverData['recv']))
+			tmpRow = serverTable.addRow([agent.Unsigned32(i)])
+			tmpRow.setRowCell(2, agent.DisplayString(s['name']))
+			tmpRow.setRowCell(3, agent.Integer32(len(serverData['users'])))
+			tmpRow.setRowCell(4, agent.Unsigned32(serverData['send']))
+			tmpRow.setRowCell(5, agent.Unsigned32(serverData['recv']))
 			for u in serverData['users']:
-				tmpUser = userTable.addRow([agent.DisplayString(u['name'])])
-				tmpUser.setRowCell(2, agent.DisplayString(s['name']))
-				tmpUser.setRowCell(3, agent.Unsigned32(int(u['send'])))
-				tmpUser.setRowCell(4, agent.Unsigned32(int(u['recv'])))
+				tmpUser = userTable.addRow([agent.Unsigned32(user_index)])
+				tmpUser.setRowCell(2, agent.DisplayString(u['name']))
+				tmpUser.setRowCell(3, agent.DisplayString(s['name']))
+				tmpUser.setRowCell(4, agent.Unsigned32(int(u['send'])))
+				tmpUser.setRowCell(5, agent.Unsigned32(int(u['recv'])))
+				user_index = user_index+1
 		else:
 			print "{0} is not readable".format(s['logFile'])
 

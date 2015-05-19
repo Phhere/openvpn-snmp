@@ -45,10 +45,12 @@ openvpnServerEntry  OBJECT-TYPE
 	STATUS     current
 	DESCRIPTION 
 		""
-	INDEX { openvpnServerName }
+	INDEX { openvpnServerID }
 	::= { openvpnServerTable 1 }
 
 OpenvpnServerEntry ::= SEQUENCE {
+	openvpnServerID
+		Unsigned32,
 	openvpnServerName
 		DisplayString,
 	openvpnServerUsers
@@ -59,13 +61,21 @@ OpenvpnServerEntry ::= SEQUENCE {
 		Unsigned32
 }
 
+openvpnServerID  OBJECT-TYPE
+	SYNTAX     Unsigned32
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { openvpnServerEntry 1 }
+
 openvpnServerName  OBJECT-TYPE
 	SYNTAX     DisplayString
 	MAX-ACCESS read-only
 	STATUS     current
 	DESCRIPTION 
 		""
-	::= { openvpnServerEntry 1 }
+	::= { openvpnServerEntry 2 }
 
 openvpnServerUsers  OBJECT-TYPE
 	SYNTAX     Integer32
@@ -73,7 +83,7 @@ openvpnServerUsers  OBJECT-TYPE
 	STATUS     current
 	DESCRIPTION 
 		""
-	::= { openvpnServerEntry 2 }
+	::= { openvpnServerEntry 3 }
 
 openvpnServerTrafficSend  OBJECT-TYPE
 	SYNTAX     Unsigned32
@@ -81,7 +91,7 @@ openvpnServerTrafficSend  OBJECT-TYPE
 	STATUS     current
 	DESCRIPTION 
 		""
-	::= { openvpnServerEntry 3 }
+	::= { openvpnServerEntry 4 }
 
 openvpnServerTrafficReceived  OBJECT-TYPE
 	SYNTAX     Unsigned32
@@ -89,7 +99,7 @@ openvpnServerTrafficReceived  OBJECT-TYPE
 	STATUS     current
 	DESCRIPTION 
 		""
-	::= { openvpnServerEntry 4 }
+	::= { openvpnServerEntry 5 }
 
 openvpnUserTableLength  OBJECT-TYPE
 	SYNTAX     Unsigned32
