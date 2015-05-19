@@ -1,0 +1,9 @@
+{
+	"servers": 
+	[
+		{
+			"name": "Server UDP",
+			"logFile": "openvpn-status.log"
+		}
+	]
+}

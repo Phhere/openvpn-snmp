@@ -1,6 +1,3 @@
-
--- Open Source MIB for OpenVPN-Servers
-
 OPENVPN-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
@@ -19,6 +16,9 @@ openvpnMib MODULE-IDENTITY
 		http://github.com/Phhere/openvpn-snmp"
 	DESCRIPTION 
 		"A simple mib for openvpn servers"
+	REVISION     "201505220000Z"
+	DESCRIPTION 
+		"Initial Version"
 ::= { experimental 1991 }
 
 openvpn              OBJECT IDENTIFIER ::= { openvpnMib 1 }
@@ -159,7 +159,3 @@ openvpnUserTrafficReceived  OBJECT-TYPE
 		""
 	::= { openvpnUserEntry 4 }
 END
-
-
--- This MIB was created using NuDesign Technologies' Visual MIBuilder (Ver 5.2).
-
