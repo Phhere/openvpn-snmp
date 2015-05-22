@@ -22,8 +22,9 @@ try:
 except ImportError: # pragma: no cover
     daemon = False
 
-logging.basicConfig(filename=options.logfile, level=logging.INFO)
+logging.basicConfig(level=logging.INFO,filename="test.log")
 logger = logging.getLogger(__name__)
+
 
 class OpenVpnAgentX(object):
     def __init__(self):
@@ -55,24 +56,29 @@ class OpenVpnAgentX(object):
             default="openvpn.json"
         )
         parser.add_option(
-            "-l",
-            "--logfile",
-            dest="logfile",
-            help="path of the log",
-            default="/var/log/snmp.openvpn"
+            "-f",
+            "--foreground",
+            dest="foreground",
+            help="run in foreground",
+	    default=False
         )
         (self.options, args) = parser.parse_args()
+	if not os.access(self.options.mastersocket, os.R_OK):
+		logger.critical("Can't connect to MasterSocket, run as root");
+		sys.exit(1)
+
+
 
     def _parse_config(self):
-        with open(options.configfile) as data_file:
+        with open(self.options.configfile) as data_file:
             self.serverList = json.load(data_file)
 
     def _create_snmp_objects(self):
         try:
             self.agent = netsnmpagent.netsnmpAgent(
                 AgentName="OpenVpnAgent",
-                MasterSocket=options.mastersocket,
-                PersistenceDir=options.persistencedir,
+                MasterSocket=self.options.mastersocket,
+                PersistenceDir=self.options.persistencedir,
                 MIBFiles=[os.path.abspath(os.path.dirname(sys.argv[0])) +
                           "/openvpn.mib"]
             )
@@ -128,6 +134,7 @@ class OpenVpnAgentX(object):
         self._loop = True
         signal.signal(signal.SIGINT, self._signalHandler)
         signal.signal(signal.SIGTERM, self._signalHandler)
+	self._parse_config()
         if daemon and not self.options.foreground:
             with daemon.DaemonContext():
                 self._runLoop()
@@ -144,7 +151,7 @@ class OpenVpnAgentX(object):
             self.snmp['userTable'].clear()
             user_index = 1
             for i in range(0, len(self.serverList['servers'])):
-                s = serverList['servers'][i]
+                s = self.serverList['servers'][i]
                 if os.access(s['logFile'], os.R_OK):
                     fh = open(s['logFile'], "r")
                     fileContent = fh.readlines()
