@@ -130,15 +130,20 @@ class OpenVpnAgentX(object):
             self._loop = False
 
     def run(self):
-        self._create_snmp_objects()
         self._loop = True
-        signal.signal(signal.SIGINT, self._signalHandler)
-        signal.signal(signal.SIGTERM, self._signalHandler)
-	self._parse_config()
+        self._parse_config()
         if daemon and not self.options.foreground:
-            with daemon.DaemonContext():
+            context = daemon.DaemonContext()
+            context.signal_map = {
+                signal.SIGTERM: self._signalHandler,
+                signal.SIGHUP: 'terminate',
+                signal.SIGUSR1: self._parse_config,
+            }
+            with context:
+                self._create_snmp_objects()
                 self._runLoop()
         else:
+            self._create_snmp_objects()
             logging.info("Running in foreground")
             self._runLoop()
 
