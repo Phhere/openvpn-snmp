@@ -12,11 +12,11 @@
 import sys
 import os
 import signal
-import optparse
 import json
 import re
 import logging
 import netsnmpagent
+import argparse
 try:
     import daemon
 except ImportError: # pragma: no cover
@@ -33,39 +33,41 @@ class OpenVpnAgentX(object):
 
     def _parse_args(self):
         # Process command line arguments
-        parser = optparse.OptionParser()
-        parser.add_option(
-            "-m",
-            "--mastersocket",
+        parser = argparse.ArgumentParser(description='SNMP AgentX for Openvpn')
+        parser.add_argument(
+            '-m',
+            '--mastersocket',
             dest="mastersocket",
-            help="Sets the transport specification for the master agent's AgentX socket",
+            help='Sets the transport specification for the master agent\'s AgentX socket',
             default="/var/run/agentx/master"
         )
-        parser.add_option(
+        parser.add_argument(
             "-p",
             "--persistencedir",
             dest="persistencedir",
             help="Sets the path to the persistence directory",
             default="/var/lib/net-snmp"
         )
-        parser.add_option(
+        parser.add_argument(
             "-c",
             "--configfile",
             dest="configfile",
             help="path of the json configuration file",
             default="openvpn.json"
         )
-        parser.add_option(
+        parser.add_argument(
             "-f",
             "--foreground",
             dest="foreground",
             help="run in foreground",
-	    default=False
+            default=False,
+            action='store_true'
         )
-        (self.options, args) = parser.parse_args()
-	if not os.access(self.options.mastersocket, os.R_OK):
-		logger.critical("Can't connect to MasterSocket, run as root");
-		sys.exit(1)
+        self.options = parser.parse_args()
+
+        if not os.access(self.options.mastersocket, os.R_OK):
+            logger.critical("Can't connect to MasterSocket, run as root");
+            sys.exit(1)
 
 
 
@@ -136,7 +138,7 @@ class OpenVpnAgentX(object):
             context = daemon.DaemonContext()
             context.signal_map = {
                 signal.SIGTERM: self._signalHandler,
-                signal.SIGHUP: 'terminate',
+                #signal.SIGHUP: 'terminate',
                 signal.SIGUSR1: self._parse_config,
             }
             with context:
