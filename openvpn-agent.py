@@ -19,16 +19,17 @@ import netsnmpagent
 import argparse
 try:
     import daemon
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     daemon = False
 
-logging.basicConfig(level=logging.INFO,filename="test.log")
+logging.basicConfig(level=logging.INFO, filename="test.log")
 logger = logging.getLogger(__name__)
 
 
 class OpenVpnAgentX(object):
+
     def __init__(self):
-        self._parse_args();
+        self._parse_args()
         self.run()
 
     def _parse_args(self):
@@ -66,10 +67,8 @@ class OpenVpnAgentX(object):
         self.options = parser.parse_args()
 
         if not os.access(self.options.mastersocket, os.R_OK):
-            logger.critical("Can't connect to MasterSocket, run as root");
+            logger.critical("Can't connect to MasterSocket, run as root")
             sys.exit(1)
-
-
 
     def _parse_config(self):
         with open(self.options.configfile) as data_file:
@@ -88,7 +87,7 @@ class OpenVpnAgentX(object):
             logger.critical(e)
             sys.exit(1)
 
-        self.snmp = dict();
+        self.snmp = dict()
         self.snmp['serverTable'] = self.agent.Table(
             oidstr="OPENVPN-MIB::openvpnServerTable",
             indexes=[
@@ -129,7 +128,7 @@ class OpenVpnAgentX(object):
         logger.info("AgentX connection to snmpd established.")
 
     def _signalHandler(signum, frame):
-            self._loop = False
+        self._loop = False
 
     def run(self):
         self._loop = True
@@ -138,7 +137,7 @@ class OpenVpnAgentX(object):
             context = daemon.DaemonContext()
             context.signal_map = {
                 signal.SIGTERM: self._signalHandler,
-                #signal.SIGHUP: 'terminate',
+                # signal.SIGHUP: 'terminate',
                 signal.SIGUSR1: self._parse_config,
             }
             with context:
@@ -163,17 +162,45 @@ class OpenVpnAgentX(object):
                     fh = open(s['logFile'], "r")
                     fileContent = fh.readlines()
                     serverData = self.parse_openvpn_status_file(fileContent)
-                    tmpRow = self.snmp['serverTable'].addRow([self.agent.Unsigned32(i)])
-                    tmpRow.setRowCell(2, self.agent.DisplayString(s['name']))
-                    tmpRow.setRowCell(3, self.agent.Integer32(len(serverData['users'])))
-                    tmpRow.setRowCell(4, self.agent.Unsigned32(serverData['send']))
-                    tmpRow.setRowCell(5, self.agent.Unsigned32(serverData['recv']))
+                    tmpRow = self.snmp['serverTable'].addRow(
+                        [self.agent.Unsigned32(i)]
+                    )
+                    tmpRow.setRowCell(
+                        2,
+                        self.agent.DisplayString(s['name'])
+                    )
+                    tmpRow.setRowCell(
+                        3,
+                        self.agent.Integer32(len(serverData['users']))
+                    )
+                    tmpRow.setRowCell(
+                        4,
+                        self.agent.Unsigned32(serverData['send'])
+                    )
+                    tmpRow.setRowCell(
+                        5,
+                        self.agent.Unsigned32(serverData['recv'])
+                    )
                     for u in serverData['users']:
-                        tmpUser = self.snmp['userTable'].addRow([self.agent.Unsigned32(user_index)])
-                        tmpUser.setRowCell(2, self.agent.DisplayString(u['name']))
-                        tmpUser.setRowCell(3, self.agent.DisplayString(s['name']))
-                        tmpUser.setRowCell(4, self.agent.Unsigned32(u['send']))
-                        tmpUser.setRowCell(5, self.agent.Unsigned32(u['recv']))
+                        tmpUser = self.snmp['userTable'].addRow(
+                            [self.agent.Unsigned32(user_index)]
+                        )
+                        tmpUser.setRowCell(
+                            2,
+                            self.agent.DisplayString(u['name'])
+                        )
+                        tmpUser.setRowCell(
+                            3,
+                            self.agent.DisplayString(s['name'])
+                        )
+                        tmpUser.setRowCell(
+                            4,
+                            self.agent.Unsigned32(u['send'])
+                        )
+                        tmpUser.setRowCell(
+                            5,
+                            self.agent.Unsigned32(u['recv'])
+                        )
                         user_index = user_index+1
                 else:
                     logger.warning("{0} is not readable".format(s['logFile']))
