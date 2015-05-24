@@ -54,7 +54,7 @@ OpenvpnServerEntry ::= SEQUENCE {
 	openvpnServerName
 		DisplayString,
 	openvpnServerUsers
-		Integer32,
+		Unsigned32,
 	openvpnServerTrafficSend
 		Unsigned32,
 	openvpnServerTrafficReceived
@@ -78,7 +78,7 @@ openvpnServerName  OBJECT-TYPE
 	::= { openvpnServerEntry 2 }
 
 openvpnServerUsers  OBJECT-TYPE
-	SYNTAX     Integer32
+	SYNTAX     Unsigned32
 	MAX-ACCESS read-only
 	STATUS     current
 	DESCRIPTION 

@@ -95,7 +95,7 @@ class OpenVpnAgentX(object):
             ],
             columns=[
                 (2, self.agent.DisplayString()),
-                (3, self.agent.Integer32(0)),
+                (3, self.agent.Unsigned32(0)),
                 (4, self.agent.Unsigned32(0)),
                 (5, self.agent.Unsigned32(0))
             ],
@@ -171,7 +171,7 @@ class OpenVpnAgentX(object):
                     )
                     tmpRow.setRowCell(
                         3,
-                        self.agent.Integer32(len(serverData['users']))
+                        self.agent.Unsigned32(len(serverData['users']))
                     )
                     tmpRow.setRowCell(
                         4,
